@@ -6,7 +6,6 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
       background-color: #f9f9f9;
       margin: 0;
       padding: 0;
@@ -16,25 +15,22 @@
       background-color: #222;
       color: #fff;
       padding: 2rem;
+      text-align: center;
     }
 
     header h1 {
       margin: 0;
       font-size: 3rem;
-      letter-spacing: 2px;
     }
 
     header p {
-      margin: 0;
       font-size: 1.2rem;
       color: #ddd;
     }
 
-    main {
-      margin-top: 2rem;
-    }
-
     #uploadBtn {
+      display: block;
+      margin: 2rem auto;
       padding: 1rem 2rem;
       font-size: 1.2rem;
       background-color: #007bff;
@@ -42,49 +38,88 @@
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    #uploadBtn:hover {
-      background-color: #0056b3;
     }
 
     input[type="file"] {
       display: none;
     }
 
-    .meme {
-      background-color: white;
-      border: 2px solid #ccc;
-      margin: 2rem auto;
+    #memes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+      gap: 1rem;
       padding: 1rem;
-      max-width: 600px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .meme {
+      position: relative;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 0.5rem;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
     }
 
     .meme img {
-      max-width: 100%;
+      width: 100%;
       height: auto;
+      cursor: pointer;
     }
 
     .actions {
-      margin-top: 0.5rem;
       display: flex;
-      justify-content: center;
-      gap: 1rem;
-      font-size: 1.2rem;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
     }
 
     .actions span {
       cursor: pointer;
-      background-color: #eee;
-      padding: 0.4rem 1rem;
-      border-radius: 10px;
-      transition: background-color 0.3s;
     }
 
-    .actions span:hover {
-      background-color: #ddd;
+    .deleteBtn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      padding: 0.3rem;
+    }
+
+    .profile {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      font-size: 0.8rem;
+      color: #666;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 1rem;
+      text-align: center;
+      max-width: 600px;
+      width: 90%;
+    }
+
+    .modal img {
+      width: 100%;
+      height: auto;
     }
   </style>
 </head>
@@ -94,20 +129,34 @@
     <p>töltsdfel mémeid</p>
   </header>
 
-  <main>
-    <button id="uploadBtn">📤 Feltöltés</button>
-    <input type="file" id="fileInput" accept="image/*">
-    <div id="memes"></div>
-  </main>
+  <button id="uploadBtn">📤 Feltöltés</button>
+  <input type="file" id="fileInput" accept="image/*">
+  <div id="memes"></div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <img id="modalImage" src="" alt="">
+      <p id="modalName"></p>
+      <div class="actions">
+        <span id="modalLike">👍 0</span>
+        <span id="modalDislike">👎 0</span>
+      </div>
+      <textarea id="commentBox" placeholder="Írj kommentet..." rows="3" style="width: 100%; margin-top: 1rem;"></textarea>
+      <button onclick="closeModal()">Bezárás</button>
+    </div>
+  </div>
 
   <script>
     const uploadBtn = document.getElementById('uploadBtn');
     const fileInput = document.getElementById('fileInput');
     const memesContainer = document.getElementById('memes');
+    const modal = document.getElementById('modal');
+    const modalImage = document.getElementById('modalImage');
+    const modalName = document.getElementById('modalName');
+    const modalLike = document.getElementById('modalLike');
+    const modalDislike = document.getElementById('modalDislike');
 
-    uploadBtn.addEventListener('click', () => {
-      fileInput.click();
-    });
+    uploadBtn.addEventListener('click', () => fileInput.click());
 
     fileInput.addEventListener('change', function () {
       const file = this.files[0];
@@ -116,19 +165,62 @@
         reader.onload = function (e) {
           const meme = document.createElement('div');
           meme.className = 'meme';
-          meme.innerHTML = `
-            <img src="${e.target.result}" alt="Mém">
-            <div class="actions">
-              <span>👍 Like</span>
-              <span>👎 Dislike</span>
-              <span>💬 Hozzászólás</span>
-            </div>
-          `;
+
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = file.name;
+          img.addEventListener('click', () => openModal(e.target.result, file.name));
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = '❌';
+          deleteBtn.className = 'deleteBtn';
+          deleteBtn.onclick = () => meme.remove();
+
+          const actions = document.createElement('div');
+          actions.className = 'actions';
+
+          let likeCount = 0;
+          let dislikeCount = 0;
+
+          const likeBtn = document.createElement('span');
+          likeBtn.textContent = `👍 ${likeCount}`;
+          likeBtn.onclick = () => {
+            likeCount++;
+            likeBtn.textContent = `👍 ${likeCount}`;
+          };
+
+          const dislikeBtn = document.createElement('span');
+          dislikeBtn.textContent = `👎 ${dislikeCount}`;
+          dislikeBtn.onclick = () => {
+            dislikeCount++;
+            dislikeBtn.textContent = `👎 ${dislikeCount}`;
+          };
+
+          actions.append(likeBtn, dislikeBtn);
+
+          const profile = document.createElement('div');
+          profile.className = 'profile';
+          profile.textContent = 'Profil: Névtelen';
+
+          meme.append(img, deleteBtn, actions, profile);
           memesContainer.prepend(meme);
         };
         reader.readAsDataURL(file);
       }
     });
+
+    function openModal(src, name) {
+      modal.style.display = 'flex';
+      modalImage.src = src;
+      modalName.textContent = name;
+      modalLike.textContent = '👍 0';
+      modalDislike.textContent = '👎 0';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
   </script>
 </body>
 </html>
+
