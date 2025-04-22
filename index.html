@@ -34,8 +34,23 @@
       margin-top: 2rem;
     }
 
+    #uploadBtn {
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #uploadBtn:hover {
+      background-color: #0056b3;
+    }
+
     input[type="file"] {
-      margin-top: 1rem;
+      display: none;
     }
 
     .meme {
@@ -80,13 +95,19 @@
   </header>
 
   <main>
+    <button id="uploadBtn">📤 Feltöltés</button>
     <input type="file" id="fileInput" accept="image/*">
     <div id="memes"></div>
   </main>
 
   <script>
+    const uploadBtn = document.getElementById('uploadBtn');
     const fileInput = document.getElementById('fileInput');
     const memesContainer = document.getElementById('memes');
+
+    uploadBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
 
     fileInput.addEventListener('change', function () {
       const file = this.files[0];
