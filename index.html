@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MémTöltő – A te saját mémoldalad</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #00ffcc;
+    }
+    .upload-section {
+      margin-top: 30px;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+    input[type="file"] {
+      margin: 10px 0;
+    }
+    .meme-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 40px;
+    }
+    .meme-gallery img {
+      max-width: 250px;
+      margin: 10px;
+      border-radius: 10px;
+      border: 2px solid #00ffcc;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 MémTöltő 🎉</h1>
+  <p>Töltsd fel a saját mémeidet és nézd meg másokét is!</p>
+  <div class="upload-section">
+    <form id="uploadForm">
+      <input type="file" id="memeInput" accept="image/*" required><br>
+      <button type="submit">Feltöltés</button>
+    </form>
+  </div>
+
+  <div class="meme-gallery" id="gallery"></div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const input = document.getElementById('memeInput');
+    const gallery = document.getElementById('gallery');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const file = input.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          const img = document.createElement('img');
+          img.src = event.target.result;
+          gallery.appendChild(img);
+        }
+        reader.readAsDataURL(file);
+        input.value = ''; // reset input
+      }
+    });
+  </script>
+</body>
+</html>
