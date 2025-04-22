@@ -33,6 +33,22 @@
     main {
       margin-top: 2rem;
     }
+
+    input[type="file"] {
+      margin-top: 1rem;
+    }
+
+    #preview {
+      margin-top: 1rem;
+      max-width: 80%;
+      border: 2px dashed #ccc;
+      padding: 1rem;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <body>
@@ -42,8 +58,26 @@
   </header>
 
   <main>
-    <!-- Ide jön majd a mémfeltöltés része -->
     <p>🎉 Üdv az oldalon, haver!</p>
+
+    <input type="file" id="fileInput" accept="image/*">
+    <div id="preview"></div>
   </main>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const preview = document.getElementById('preview');
+
+    fileInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          preview.innerHTML = `<img src="${e.target.result}" alt="Mém előnézet">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
 </body>
 </html>
