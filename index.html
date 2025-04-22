@@ -47,37 +47,3 @@
   </main>
 </body>
 </html>
-
-  <h1>🎉 MémTöltő 🎉</h1>
-  <p>Töltsd fel a saját mémeidet és nézd meg másokét is!</p>
-  <div class="upload-section">
-    <form id="uploadForm">
-      <input type="file" id="memeInput" accept="image/*" required><br>
-      <button type="submit">Feltöltés</button>
-    </form>
-  </div>
-
-  <div class="meme-gallery" id="gallery"></div>
-
-  <script>
-    const form = document.getElementById('uploadForm');
-    const input = document.getElementById('memeInput');
-    const gallery = document.getElementById('gallery');
-
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const file = input.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          const img = document.createElement('img');
-          img.src = event.target.result;
-          gallery.appendChild(img);
-        }
-        reader.readAsDataURL(file);
-        input.value = ''; // reset input
-      }
-    });
-  </script>
-</body>
-</html>
