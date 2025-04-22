@@ -38,16 +38,38 @@
       margin-top: 1rem;
     }
 
-    #preview {
-      margin-top: 1rem;
-      max-width: 80%;
-      border: 2px dashed #ccc;
+    .meme {
+      background-color: white;
+      border: 2px solid #ccc;
+      margin: 2rem auto;
       padding: 1rem;
+      max-width: 600px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    img {
+    .meme img {
       max-width: 100%;
       height: auto;
+    }
+
+    .actions {
+      margin-top: 0.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .actions span {
+      cursor: pointer;
+      background-color: #eee;
+      padding: 0.4rem 1rem;
+      border-radius: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .actions span:hover {
+      background-color: #ddd;
     }
   </style>
 </head>
@@ -58,22 +80,30 @@
   </header>
 
   <main>
-    <p>🎉 Üdv az oldalon, haver!</p>
-
     <input type="file" id="fileInput" accept="image/*">
-    <div id="preview"></div>
+    <div id="memes"></div>
   </main>
 
   <script>
     const fileInput = document.getElementById('fileInput');
-    const preview = document.getElementById('preview');
+    const memesContainer = document.getElementById('memes');
 
     fileInput.addEventListener('change', function () {
       const file = this.files[0];
       if (file) {
         const reader = new FileReader();
         reader.onload = function (e) {
-          preview.innerHTML = `<img src="${e.target.result}" alt="Mém előnézet">`;
+          const meme = document.createElement('div');
+          meme.className = 'meme';
+          meme.innerHTML = `
+            <img src="${e.target.result}" alt="Mém">
+            <div class="actions">
+              <span>👍 Like</span>
+              <span>👎 Dislike</span>
+              <span>💬 Hozzászólás</span>
+            </div>
+          `;
+          memesContainer.prepend(meme);
         };
         reader.readAsDataURL(file);
       }
