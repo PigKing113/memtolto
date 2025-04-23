@@ -112,9 +112,12 @@
     <h1>MAGYARMEMEPORTAL</h1>
     <p>töltsdfel mémeid</p>
   </header>
+
   <button id="uploadBtn">📤 Feltöltés</button>
   <input type="file" id="fileInput" accept="image/*">
+
   <div id="memes"></div>
+
   <div class="modal" id="modal">
     <div class="modal-content">
       <img id="modalImage" src="" alt="">
@@ -127,6 +130,7 @@
       <button onclick="closeModal()">Bezárás</button>
     </div>
   </div>
+
   <script>
     const uploadBtn = document.getElementById('uploadBtn');
     const fileInput = document.getElementById('fileInput');
@@ -171,6 +175,7 @@
           likeBtn.onclick = () => {
             likeCount++;
             likeBtn.textContent = `👍 ${likeCount}`;
+            if (modal.style.display === 'flex') modalLike.textContent = likeBtn.textContent;
           };
 
           const dislikeBtn = document.createElement('span');
@@ -178,6 +183,7 @@
           dislikeBtn.onclick = () => {
             dislikeCount++;
             dislikeBtn.textContent = `👎 ${dislikeCount}`;
+            if (modal.style.display === 'flex') modalDislike.textContent = dislikeBtn.textContent;
           };
 
           actions.append(likeBtn, dislikeBtn);
@@ -206,6 +212,13 @@
     function closeModal() {
       modal.style.display = 'none';
     }
+
+    // kattintás a modal háttérre: zárja be
+    modal.addEventListener('click', function (event) {
+      if (!event.target.closest('.modal-content')) {
+        closeModal();
+      }
+    });
   </script>
 </body>
 </html>
